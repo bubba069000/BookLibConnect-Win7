@@ -1,32 +1,39 @@
 # Book Lib Connect — Windows 7 download compatibility
 
-This is a community-maintained modification of [Book Lib Connect](https://github.com/audiamus/BookLibConnect) version **0.14.1**.
+A community-maintained Windows compatibility modification of [Book Lib Connect](https://github.com/audiamus/BookLibConnect) **version 0.14.1**.
 
-## What changed
+## What this version changes
 
-The original application uses .NET's HTTPS client for audiobook file downloads. On some Windows 7 systems, that download handshake fails because it relies on the operating system's Schannel TLS implementation.
+On affected Windows 7 systems, the original application's audiobook download HTTPS handshake fails when using Windows Schannel. This version replaces **only the audiobook file-download transport** with a bundled Windows x64 build of curl using LibreSSL.
 
-This version changes **only the audiobook file-download transport**: it invokes a bundled Windows x64 build of curl using LibreSSL. Audible login, library access, licence requests, decryption, and the rest of the application remain based on the upstream 0.14.1 source.
+The application is built from the original upstream 0.14.1 source. Audible login, library access, licence requests, decryption, and the user interface are not ported or rewritten. The exact upstream source commit is pinned in the build workflow, and the modified `AudibleApi.cs` source is provided in this repository under `patches/`.
 
-The bundled curl distribution and its CA bundle are downloaded and SHA-256 verified during the GitHub Actions build. The curl URL is passed through standard input rather than exposed in the process command line.
+The bundled curl archive is downloaded during the build and verified against a pinned SHA-256 digest. The build places `curl.exe` and its CA certificate bundle beside the application. The signed download URL is supplied to curl through standard input rather than placed on its command line.
 
-## Source baseline and attribution
+## Upstream source and attribution
 
-- Upstream project: https://github.com/audiamus/BookLibConnect
-- Upstream version: 0.14.1
-- Upstream source commit: `ed240bca2d475482b6fac61a201e39e827d8a46b`
-- Upstream author: audiamus
-- Original licence: GNU General Public License, version 3 (see [LICENSE](LICENSE))
+- Original project: https://github.com/audiamus/BookLibConnect
+- Original release: 0.14.1
+- Exact source baseline: `ed240bca2d475482b6fac61a201e39e827d8a46b`
+- Original author: audiamus
+- Original licence: GNU General Public License v3.0 (see [LICENSE](https://github.com/audiamus/BookLibConnect/blob/ed240bca2d475482b6fac61a201e39e827d8a46b/LICENSE))
 
-This repository is an independent compatibility modification; it is not an official release of, or endorsed by, the upstream author. The upstream copyright notices and licence are retained. Changes in this repository are identified as modifications.
+This is an independent compatibility modification, not an official upstream release and not endorsed by the upstream author. The original upstream source is checked out at the pinned commit during every build. The modified source file and build scripts are included here so the build can be reproduced.
 
-## Build
+## Build and download
 
-The GitHub Actions workflow in `.github/workflows/build-win7.yml` builds a self-contained Windows x64 application and packages the required curl executable and CA bundle alongside it.
+Open the **Actions** tab and run **Build BookLibConnect Windows x64**, or use the latest successful run. Download the workflow artifact named `BookLibConnect-0.14.1-win-x64-build-<run number>`.
 
-A successful build does not by itself guarantee compatibility with every Windows 7 installation. The published build should be considered empirically tested on the systems identified in the release notes.
+The package contains the application, `curl.exe`, `curl-ca-bundle.crt`, and a `BUILD.txt` identification file.
 
-## Important
+## Windows 7 compatibility
 
-Use this application only with audiobooks from your own Audible account and in accordance with applicable law and Audible's terms. Do not distribute downloaded audiobooks.
+The original upstream project targets .NET 8. Microsoft does not officially support .NET 8 on Windows 7. This modification replaces the audiobook download TLS dependency that failed on the tested Windows 7 system; it does not claim official .NET 8 support for Windows 7. Compatibility is empirical and is not guaranteed for every Windows 7 configuration.
 
+## Third-party components
+
+The bundled curl distribution includes LibreSSL and its CA bundle. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for component and licence references.
+
+## Responsible use
+
+Use Book Lib Connect only with audiobooks from your own Audible account and in accordance with applicable law and Audible's terms. Do not redistribute downloaded audiobooks.
