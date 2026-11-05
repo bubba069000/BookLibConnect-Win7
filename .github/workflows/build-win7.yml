@@ -31,6 +31,7 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item "overlay/patches/AudibleApi.cs" "source/src/Connect.lib.core/AudibleApi.cs" -Force
+          Copy-Item "overlay/patches/ExtensionsVarious.cs" "source/src/AuxLib.core/ExtensionsVarious.cs" -Force
 
       - name: Install upstream .NET 8 SDK
         uses: actions/setup-dotnet@v5
