@@ -57,12 +57,12 @@ jobs:
             throw "Known vulnerable NuGet dependencies were reported; review the audit output."
           }
 
-      - name: Publish self-contained Windows x64 application
+      - name: Publish framework-dependent Windows x64 application
         run: >
           dotnet publish "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
           --configuration Release
           --runtime win-x64
-          --self-contained true
+          --self-contained false
           -p:SuppressImplicitGitSourceLink=true
           -p:EnableSourceLink=false
           -p:EnableSourceControlManagerQueries=false
@@ -97,6 +97,8 @@ jobs:
           "Upstream source commit: ed240bca2d475482b6fac61a201e39e827d8a46b" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
           "Compatibility project commit: ${{ github.sha }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
           "Workflow run: ${{ github.run_id }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Deployment: framework-dependent; requires Microsoft.WindowsDesktop.App 8.0.x x64." | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          Copy-Item "overlay/DISCLAIMER.txt" "artifacts/BookLibConnect/DISCLAIMER.txt"
 
       - name: Package application
         shell: pwsh
