@@ -1,5 +1,5 @@
 name: Build BookLibConnect Windows x64
-run-name: BookLibConnect 0.14.1 build ${{ github.run_number }}
+run-name: BookLibConnect 0.14.1 framework-dependent test build 20 (Actions run ${{ github.run_number }})
 
 on:
   push:
@@ -42,12 +42,12 @@ jobs:
       - name: Restore
         run: dotnet restore "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
 
-      - name: Publish self-contained Windows x64 application
+      - name: Publish framework-dependent Windows x64 application
         run: >
           dotnet publish "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
           --configuration Release
           --runtime win-x64
-          --self-contained true
+          --self-contained false
           -p:SuppressImplicitGitSourceLink=true
           -p:EnableSourceLink=false
           -p:EnableSourceControlManagerQueries=false
@@ -82,17 +82,19 @@ jobs:
           "Upstream source commit: ed240bca2d475482b6fac61a201e39e827d8a46b" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
           "Compatibility project commit: ${{ github.sha }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
           "Workflow run: ${{ github.run_id }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Deployment: framework-dependent; requires Microsoft.WindowsDesktop.App 8.0.x x64." | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          Copy-Item "overlay/DISCLAIMER.txt" "artifacts/BookLibConnect/DISCLAIMER.txt"
 
       - name: Package application
         shell: pwsh
         run: |
-          $package = "BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}.zip"
+          $package = "BookLibConnect-0.14.1-win-x64-build-20-framework-dependent.zip"
           Compress-Archive -Path "artifacts/BookLibConnect/*" -DestinationPath $package
           "PACKAGE_NAME=$package" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Upload executable package
         uses: actions/upload-artifact@v6
         with:
-          name: BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}
+          name: BookLibConnect-0.14.1-win-x64-build-20-framework-dependent
           path: ${{ env.PACKAGE_NAME }}
           if-no-files-found: error
