@@ -16,12 +16,12 @@ jobs:
     runs-on: windows-2022
     steps:
       - name: Check out this compatibility project
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: overlay
 
       - name: Check out pristine upstream BookLibConnect 0.14.1
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: audiamus/BookLibConnect
           ref: ed240bca2d475482b6fac61a201e39e827d8a46b
@@ -33,7 +33,7 @@ jobs:
           Copy-Item "overlay/patches/AudibleApi.cs" "source/src/Connect.lib.core/AudibleApi.cs" -Force
 
       - name: Install upstream .NET 8 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 8.0.x
 
@@ -86,7 +86,7 @@ jobs:
           "PACKAGE_NAME=$package" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Upload executable package
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}
           path: ${{ env.PACKAGE_NAME }}
