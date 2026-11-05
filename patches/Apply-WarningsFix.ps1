@@ -22,7 +22,13 @@ function Replace-Regex([string]$Path, [string]$Pattern, [string]$Replacement) {
 # dependency graph consistently so Windows-specific references remain compatible.
 $projects = Get-ChildItem "source/src" -Filter "*.csproj" -Recurse
 foreach ($project in $projects) {
-  Replace-Exact $project.FullName '<TargetFramework>net8.0</TargetFramework>' '<TargetFramework>net8.0-windows7.0</TargetFramework>'
+  $projectText = [System.IO.File]::ReadAllText($project.FullName)
+  if ($projectText.Contains('<TargetFramework>net8.0</TargetFramework>')) {
+    Replace-Exact $project.FullName '<TargetFramework>net8.0</TargetFramework>' '<TargetFramework>net8.0-windows7.0</TargetFramework>'
+  }
+  elseif (-not $projectText.Contains('<TargetFramework>net8.0-windows7.0</TargetFramework>')) {
+    throw "Unexpected target framework in $($project.FullName); refusing an uncertain patch."
+  }
 }
 
 # Rename the local alias to avoid the compiler's lowercase-identifier warning.
