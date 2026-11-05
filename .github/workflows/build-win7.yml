@@ -1,5 +1,5 @@
 name: Build BookLibConnect Windows x64
-run-name: BookLibConnect 0.14.1 build \${{ github.run_number }}
+run-name: BookLibConnect 0.14.1 build ${{ github.run_number }}
 
 on:
   push:
@@ -46,7 +46,7 @@ jobs:
           --configuration Release
           --runtime win-x64
           --self-contained true
-          --output "\${{ github.workspace }}\artifacts\BookLibConnect"
+          --output "${{ github.workspace }}\artifacts\BookLibConnect"
 
       - name: Download and verify Windows 7-compatible curl with LibreSSL
         shell: pwsh
@@ -72,22 +72,22 @@ jobs:
       - name: Write build identification
         shell: pwsh
         run: |
-          "BookLibConnect 0.14.1 - upstream .NET 8 - build \${{ github.run_number }}" | Set-Content "artifacts/BookLibConnect/BUILD.txt"
+          "BookLibConnect 0.14.1 - upstream .NET 8 - build ${{ github.run_number }}" | Set-Content "artifacts/BookLibConnect/BUILD.txt"
           "Audiobook download TLS: bundled curl 8.22.0 / LibreSSL 4.3.2" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
           "Upstream source commit: ed240bca2d475482b6fac61a201e39e827d8a46b" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
-          "Compatibility project commit: \${{ github.sha }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
-          "Workflow run: \${{ github.run_id }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Compatibility project commit: ${{ github.sha }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Workflow run: ${{ github.run_id }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
 
       - name: Package application
         shell: pwsh
         run: |
-          $package = "BookLibConnect-0.14.1-win-x64-build-\${{ github.run_number }}.zip"
+          $package = "BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}.zip"
           Compress-Archive -Path "artifacts/BookLibConnect/*" -DestinationPath $package
           "PACKAGE_NAME=$package" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Upload executable package
         uses: actions/upload-artifact@v4
         with:
-          name: BookLibConnect-0.14.1-win-x64-build-\${{ github.run_number }}
-          path: \${{ env.PACKAGE_NAME }}
+          name: BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}
+          path: ${{ env.PACKAGE_NAME }}
           if-no-files-found: error
