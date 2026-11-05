@@ -34,7 +34,8 @@ foreach ($project in $projects) {
 # Pin the transitive Git build task to the fixed release for CVE-2026-62900.
 # It is a build-only dependency and is excluded from published application assets.
 $appProjectPath = "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
-Replace-Exact $appProjectPath '<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.21">' '<PackageReference Include="Microsoft.Build.Tasks.Git" Version="10.0.303"><PrivateAssets>all</PrivateAssets><IncludeAssets>build;buildtransitive</IncludeAssets></PackageReference>`r`n    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.21">'
+$replacement = '<PackageReference Include="Microsoft.Build.Tasks.Git" Version="10.0.303"><PrivateAssets>all</PrivateAssets><IncludeAssets>build;buildtransitive</IncludeAssets></PackageReference>' + [Environment]::NewLine + '    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.21">'
+Replace-Exact $appProjectPath '<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.21">' $replacement
 
 # Rename the local alias to avoid the compiler's lowercase-identifier warning.
 $convertPath = "source/src/Connect.ui.lib.core/ConvertDGVControl.cs"
