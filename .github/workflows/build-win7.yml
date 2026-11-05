@@ -40,7 +40,11 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
+        run: >
+          dotnet restore "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
+          -p:SuppressImplicitGitSourceLink=true
+          -p:EnableSourceLink=false
+          -p:EnableSourceControlManagerQueries=false
 
       - name: Audit direct and transitive NuGet dependencies
         shell: pwsh
