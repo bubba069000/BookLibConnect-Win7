@@ -1,0 +1,93 @@
+name: Build BookLibConnect Windows x64
+run-name: BookLibConnect 0.14.1 build \${{ github.run_number }}
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - name: Check out this compatibility project
+        uses: actions/checkout@v4
+        with:
+          path: overlay
+
+      - name: Check out pristine upstream BookLibConnect 0.14.1
+        uses: actions/checkout@v4
+        with:
+          repository: audiamus/BookLibConnect
+          ref: ed240bca2d475482b6fac61a201e39e827d8a46b
+          path: source
+
+      - name: Apply the Windows download transport change
+        shell: pwsh
+        run: |
+          Copy-Item "overlay/patches/AudibleApi.cs" "source/src/Connect.lib.core/AudibleApi.cs" -Force
+
+      - name: Install upstream .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
+
+      - name: Publish self-contained Windows x64 application
+        run: >
+          dotnet publish "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
+          --configuration Release
+          --runtime win-x64
+          --self-contained true
+          --output "\${{ github.workspace }}\artifacts\BookLibConnect"
+
+      - name: Download and verify Windows 7-compatible curl with LibreSSL
+        shell: pwsh
+        run: |
+          $archive = Join-Path $env:RUNNER_TEMP "curl-win64.zip"
+          $url = "https://curl.se/windows/dl-8.22.0_1/curl-8.22.0_1-win64-mingw.zip"
+          Invoke-WebRequest -Uri $url -OutFile $archive
+          $expected = "7f23b039f6ea4197362d4468e1a0e71428201222e1bef3b680d5ef7b2aefb714"
+          $actual = (Get-FileHash -Algorithm SHA256 $archive).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw "curl archive SHA-256 mismatch: $actual" }
+          $extract = Join-Path $env:RUNNER_TEMP "curl-extract"
+          Expand-Archive -Path $archive -DestinationPath $extract -Force
+          $curl = Get-ChildItem $extract -Filter curl.exe -Recurse | Select-Object -First 1
+          $ca = Get-ChildItem $extract -Filter curl-ca-bundle.crt -Recurse | Select-Object -First 1
+          if (-not $curl) { throw "curl.exe was not found in the verified archive." }
+          if (-not $ca) { throw "curl-ca-bundle.crt was not found in the verified archive." }
+          New-Item -ItemType Directory -Force "artifacts/BookLibConnect" | Out-Null
+          Copy-Item $curl.FullName "artifacts/BookLibConnect/curl.exe"
+          Copy-Item $ca.FullName "artifacts/BookLibConnect/curl-ca-bundle.crt"
+          & "artifacts/BookLibConnect/curl.exe" --version
+          if ($LASTEXITCODE -ne 0) { throw "Bundled curl failed its startup check." }
+
+      - name: Write build identification
+        shell: pwsh
+        run: |
+          "BookLibConnect 0.14.1 - upstream .NET 8 - build \${{ github.run_number }}" | Set-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Audiobook download TLS: bundled curl 8.22.0 / LibreSSL 4.3.2" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Upstream source commit: ed240bca2d475482b6fac61a201e39e827d8a46b" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Compatibility project commit: \${{ github.sha }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+          "Workflow run: \${{ github.run_id }}" | Add-Content "artifacts/BookLibConnect/BUILD.txt"
+
+      - name: Package application
+        shell: pwsh
+        run: |
+          $package = "BookLibConnect-0.14.1-win-x64-build-\${{ github.run_number }}.zip"
+          Compress-Archive -Path "artifacts/BookLibConnect/*" -DestinationPath $package
+          "PACKAGE_NAME=$package" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload executable package
+        uses: actions/upload-artifact@v4
+        with:
+          name: BookLibConnect-0.14.1-win-x64-build-\${{ github.run_number }}
+          path: \${{ env.PACKAGE_NAME }}
+          if-no-files-found: error
