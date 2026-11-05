@@ -44,4 +44,12 @@ Replace-Regex $formPath '    private static double\? __relSplitterDistBottom;\r?
 Replace-Exact $formPath '__relSplitterDistBottom ?? REL_SPLITTER_DIST_BOTTOM' 'REL_SPLITTER_DIST_BOTTOM'
 Replace-Exact $formPath '__relSplitterDistInner ?? REL_SPLITTER_DIST_INNER' 'REL_SPLITTER_DIST_INNER'
 
-Write-Host "Applied Windows platform targets and upstream compiler-warning fixes."
+# Single-file publishing leaves Assembly.Location empty. Use assembly identity for
+# the title fallback and the actual host executable path for Windows file associations.
+$applEnvPath = "source/src/AuxLib.core/ApplEnv.cs"
+Replace-Exact $applEnvPath 'Path.GetFileNameWithoutExtension (ExecutingAssembly.Location)' 'ExecutingAssembly.GetName ().Name'
+
+$fileAssociationPath = "source/src/AuxWin32Lib.core/FileAssociation.cs"
+Replace-Exact $fileAssociationPath 'ExecutableFilePath = assembly.Location' 'ExecutableFilePath = Environment.ProcessPath ?? throw new InvalidOperationException ("The application executable path could not be determined.")'
+
+Write-Host "Applied Windows platform, compiler-warning, and single-file compatibility fixes."
