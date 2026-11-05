@@ -18,15 +18,11 @@ function Replace-Regex([string]$Path, [string]$Pattern, [string]$Replacement) {
   [System.IO.File]::WriteAllText($Path, $updated, [System.Text.UTF8Encoding]::new($false))
 }
 
-# These libraries use Windows-only APIs; target the actual Windows 7 minimum
-# already used by the WinForms projects, rather than pretending to be portable.
-$projects = @(
-  "source/src/SystemMgmt.core/SystemMgmt.core.csproj",
-  "source/src/AuxWin32Lib.core/AuxWin32Lib.core.csproj",
-  "source/src/Connect.lib.core/Connect.lib.core.csproj"
-)
+# The complete application is Windows-only. Target every project in its
+# dependency graph consistently so Windows-specific references remain compatible.
+$projects = Get-ChildItem "source/src" -Filter "*.csproj" -Recurse
 foreach ($project in $projects) {
-  Replace-Exact $project '<TargetFramework>net8.0</TargetFramework>' '<TargetFramework>net8.0-windows7.0</TargetFramework>'
+  Replace-Exact $project.FullName '<TargetFramework>net8.0</TargetFramework>' '<TargetFramework>net8.0-windows7.0</TargetFramework>'
 }
 
 # Rename the local alias to avoid the compiler's lowercase-identifier warning.
