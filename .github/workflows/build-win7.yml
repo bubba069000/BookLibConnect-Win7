@@ -48,6 +48,7 @@ jobs:
           --configuration Release
           --runtime win-x64
           --self-contained false
+          -p:PublishSingleFile=true
           -p:SuppressImplicitGitSourceLink=true
           -p:EnableSourceLink=false
           -p:EnableSourceControlManagerQueries=false
