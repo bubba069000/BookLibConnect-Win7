@@ -49,6 +49,7 @@ jobs:
           --runtime win-x64
           --self-contained true
           -p:SuppressImplicitGitSourceLink=true
+          -p:EnableSourceLink=false
           -p:EnableSourceControlManagerQueries=false
           --output "${{ github.workspace }}\artifacts\BookLibConnect"
 
