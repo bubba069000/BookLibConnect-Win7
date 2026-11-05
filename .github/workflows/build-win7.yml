@@ -42,6 +42,17 @@ jobs:
       - name: Restore
         run: dotnet restore "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
 
+      - name: Audit direct and transitive NuGet dependencies
+        shell: pwsh
+        run: |
+          $project = "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
+          $audit = dotnet list $project package --vulnerable --include-transitive 2>&1
+          $audit | ForEach-Object { Write-Host $_ }
+          if ($LASTEXITCODE -ne 0) { throw "NuGet vulnerability audit command failed." }
+          if (($audit | Out-String) -match "has the following vulnerable packages") {
+            throw "Known vulnerable NuGet dependencies were reported; review the audit output."
+          }
+
       - name: Publish self-contained Windows x64 application
         run: >
           dotnet publish "source/src/Connect.app.gui.core/Connect.app.gui.core.csproj"
