@@ -1,0 +1,15 @@
+DISCLAIMER
+
+This is an unofficial, independently modified version of Book Lib Connect 0.14.1. It is not affiliated with, endorsed by, or supported by the original author or Audible.
+
+This software is provided AS IS, without warranties or guarantees of any kind. It has received limited testing and is supplied without technical support, maintenance commitments, or promises of future updates.
+
+Windows 7 compatibility is based on limited practical testing. Microsoft does not officially support .NET 8 on Windows 7.
+
+The application and its bundled third-party components may contain known or undiscovered security vulnerabilities. Users are responsible for evaluating the software and deciding whether it is suitable for their circumstances.
+
+Users assume responsibility for downloading, installing, and using this software. Use is at your own risk (caveat emptor).
+
+Use Book Lib Connect only in accordance with applicable laws and the terms governing your Audible account. Do not redistribute copyrighted audiobooks.
+
+The original project's licensing terms and third-party component licences continue to apply.
