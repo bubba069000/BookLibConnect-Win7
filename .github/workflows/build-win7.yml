@@ -48,6 +48,8 @@ jobs:
           --configuration Release
           --runtime win-x64
           --self-contained true
+          -p:SuppressImplicitGitSourceLink=true
+          -p:EnableSourceControlManagerQueries=false
           --output "${{ github.workspace }}\artifacts\BookLibConnect"
 
       - name: Download and verify Windows 7-compatible curl with LibreSSL
