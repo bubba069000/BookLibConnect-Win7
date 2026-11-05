@@ -3,7 +3,7 @@ run-name: BookLibConnect 0.14.1 framework-dependent test build 20 (Actions run $
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, framework-dependent-from-build14 ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
