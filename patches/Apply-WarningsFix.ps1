@@ -32,7 +32,8 @@ foreach ($project in $projects) {
 # Rename the local alias to avoid the compiler's lowercase-identifier warning.
 $convertPath = "source/src/Connect.ui.lib.core/ConvertDGVControl.cs"
 Replace-Exact $convertPath 'using abl = core.audiamus.booksdb;' 'using ABL = core.audiamus.booksdb;'
-Replace-Regex $convertPath '\babl\.' 'ABL.'
+Replace-Exact $convertPath 'HashSet<abl.Component>' 'HashSet<ABL.Component>'
+Replace-Exact $convertPath 'IEnumerable<abl.Component>' 'IEnumerable<ABL.Component>'
 
 # The splitter persistence fields are never assigned upstream; use the same
 # existing defaults directly instead of retaining permanently-null fields.
