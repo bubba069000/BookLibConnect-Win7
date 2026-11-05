@@ -32,6 +32,7 @@ jobs:
         run: |
           Copy-Item "overlay/patches/AudibleApi.cs" "source/src/Connect.lib.core/AudibleApi.cs" -Force
           Copy-Item "overlay/patches/ExtensionsVarious.cs" "source/src/AuxLib.core/ExtensionsVarious.cs" -Force
+          & "overlay/patches/Apply-WarningsFix.ps1"
 
       - name: Install upstream .NET 8 SDK
         uses: actions/setup-dotnet@v5
@@ -87,7 +88,7 @@ jobs:
           "PACKAGE_NAME=$package" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Upload executable package
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: BookLibConnect-0.14.1-win-x64-build-${{ github.run_number }}
           path: ${{ env.PACKAGE_NAME }}
