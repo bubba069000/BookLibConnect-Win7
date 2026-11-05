@@ -2,6 +2,8 @@
 
 A community-maintained Windows compatibility modification of [Book Lib Connect](https://github.com/audiamus/BookLibConnect) **version 0.14.1**.
 
+> **Disclaimer:** This is unofficial software, provided as-is, without warranty, support, or a promise of future updates. It has received limited testing. Windows 7 compatibility is empirical; .NET 8 is not officially supported by Microsoft on Windows 7. The application and bundled components may contain known or undiscovered vulnerabilities. Use at your own risk (*caveat emptor*). Read the full [DISCLAIMER.txt](DISCLAIMER.txt) before using it.
+
 ## What this version changes
 
 On affected Windows 7 systems, the original application's audiobook download HTTPS handshake fails when using Windows Schannel. This version replaces **only the audiobook file-download transport** with a bundled Windows x64 build of curl using LibreSSL.
@@ -20,11 +22,11 @@ The bundled curl archive is downloaded during the build and verified against a p
 
 This is an independent compatibility modification, not an official upstream release and not endorsed by the upstream author. The original upstream source is checked out at the pinned commit during every build. The modified source file and build scripts are included here so the build can be reproduced.
 
-## Build and download
+## Download
 
-Open the **Actions** tab and run **Build BookLibConnect Windows x64**, or use the latest successful run. Download the workflow artifact named `BookLibConnect-0.14.1-win-x64-build-<run number>`.
+The intended public download is the **build 14** ZIP attached to the GitHub Release. See the [Releases page](https://github.com/bubba069000/BookLibConnect-Win7/releases). Do not use later Actions builds as substitutes for build 14 unless explicitly identified as a replacement release.
 
-The package contains the application, `curl.exe`, `curl-ca-bundle.crt`, and a `BUILD.txt` identification file.
+The package contains the application, `curl.exe`, `curl-ca-bundle.crt`, and a `BUILD.txt` identification file. The public release package should also contain `DISCLAIMER.txt`.
 
 ## Windows 7 compatibility
 
