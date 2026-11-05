@@ -1,0 +1,54 @@
+name: Publish BookLibConnect build 14 release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Download the original build 14 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: BookLibConnect-0.14.1-win-x64-build-14
+          path: incoming
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: 41959196722
+
+      - name: Add the disclaimer and repackage
+        shell: bash
+        run: |
+          set -euo pipefail
+          package="BookLibConnect-0.14.1-win-x64-build-14-with-disclaimer.zip"
+          mkdir extracted
+          unzip -q "incoming/BookLibConnect-0.14.1-win-x64-build-14.zip" -d extracted
+          cp DISCLAIMER.txt extracted/DISCLAIMER.txt
+          (cd extracted && zip -qr "../$package" .)
+          sha256sum "$package"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-14
+          target_commitish: 3e54b8b32c8537b98f80398098ef16ad4d199b65
+          name: BookLibConnect 0.14.1 — Windows 7 compatibility (Build 14)
+          body: |
+            Unofficial, independently modified version of BookLibConnect 0.14.1.
+
+            **Provided AS IS, with no warranty, technical support, maintenance commitment, or promise of future updates.** Testing has been limited. Windows 7 compatibility is based on practical testing; Microsoft does not officially support .NET 8 on Windows 7. The application and bundled third-party components may contain known or undiscovered security vulnerabilities. Use at your own risk.
+
+            Read the included `DISCLAIMER.txt` before use. Original project licensing terms and third-party component licences continue to apply. Use BookLibConnect only in accordance with applicable laws and the terms governing your Audible account. Do not redistribute copyrighted audiobooks.
+
+            This release is build 14, based on upstream commit `ed240bca2d475482b6fac61a201e39e827d8a46b` and compatibility-project commit `3e54b8b32c8537b98f80398098ef16ad4d199b65`.
+          files: BookLibConnect-0.14.1-win-x64-build-14-with-disclaimer.zip
+          fail_on_unmatched_files: true
+          draft: false
+          prerelease: false
